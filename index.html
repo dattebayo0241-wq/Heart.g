@@ -34,6 +34,21 @@
             opacity: 0;
             animation: fadeInOut 4s infinite ease-in-out;
         }
+        /* Tap to Play Button style due to browser restrictions */
+        .music-btn {
+            position: fixed;
+            bottom: 20px;
+            background: rgba(255, 51, 119, 0.3);
+            color: #fff;
+            border: 1px solid #ff3377;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-family: Arial, sans-serif;
+            font-size: 0.8rem;
+            cursor: pointer;
+            z-index: 10;
+            backdrop-filter: blur(5px);
+        }
         @keyframes rotateHeart {
             0% { transform: rotateY(0deg) rotateX(10deg); }
             100% { transform: rotateY(360deg) rotateX(10deg); }
@@ -46,42 +61,58 @@
 </head>
 <body>
 
+    <audio id="bg-music" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mp3">
+    </audio>
+
+    <button class="music-btn" id="play-btn" onclick="toggleMusic()">🎵 Play Music</button>
+
     <div class="container" id="heart-container"></div>
 
     <script>
         const container = document.getElementById('heart-container');
         const wordsCount = 180; 
-        const textToDisplay = "I love you"; // You can change this text!
+        const textToDisplay = "I love you"; 
 
         for (let i = 0; i < wordsCount; i++) {
             const word = document.createElement('div');
             word.className = 'love-word';
             word.innerText = textToDisplay;
 
-            // Math formula to arrange text into a 3D Heart shape
             const t = Math.PI * 2 * (i / wordsCount);
-            
-            // Heart curve formulas
             const x = 16 * Math.pow(Math.sin(t), 3);
             const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
-            
-            // Spherical dispersion to give it a 3D pop effect
             const z = (Math.random() - 0.5) * 50; 
 
-            // Scale up the coordinates for mobile screens
             const scale = 10; 
             const posX = x * scale;
             const posY = y * scale;
 
-            // Assign unique positions using CSS variables
             word.style.setProperty('--x', `${posX}px`);
             word.style.setProperty('--y', `${posY}px`);
             word.style.setProperty('--z', `${z}px`);
-
-            // Stagger the animation so they pulse beautifully
             word.style.animationDelay = `${Math.random() * 4}s`;
 
             container.appendChild(word);
+        }
+
+        // Music Control Function
+        const music = document.getElementById('bg-music');
+        const btn = document.getElementById('play-btn');
+        
+        // Try to autoplay (works on some mobile browsers if interacted)
+        document.body.addEventListener('click', () => {
+            if(music.paused) {
+                music.play();
+                btn.style.display = 'none'; // Hides button once music starts playing
+            }
+        }, { once: true });
+
+        function toggleMusic() {
+            if (music.paused) {
+                music.play();
+                btn.style.display = 'none';
+            }
         }
     </script>
 </body>
